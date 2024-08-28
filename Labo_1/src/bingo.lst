@@ -1,0 +1,1070 @@
+gpasm-1.4.0 #1107 (Jan  1 2021)     bingo.asm   8-28-2024  17:43:39         PAGE  1
+
+
+LOC    OBJECT CODE    LINE  SOURCE TEXT
+  VALUE
+
+                      00001 ;--------------------------------------------------------
+                      00002 ; File Created by SDCC : free open source ANSI-C Compiler
+                      00003 ; Version 4.0.0 #11528 (Linux)
+                      00004 ;--------------------------------------------------------
+                      00005 ; PIC port for the 14-bit core
+                      00006 ;--------------------------------------------------------
+                      00007 ;       .file   "bingo.c"
+                      00008         list    p=12f683
+                      00009         radix dec
+                      00010         include "p12f683.inc"
+                      00001         LIST
+                      00002 
+                      00003 ;==========================================================================
+                      00004 ; Build date : Aug 07 2014
+                      00005 ;  MPASM PIC12F683 processor include
+                      00006 ; 
+                      00007 ;  (c) Copyright 1999-2014 Microchip Technology, All rights reserved
+                      00008 ;==========================================================================
+                      00009 
+                      00460         LIST
+                      00011 ;--------------------------------------------------------
+                      00012 ; external declarations
+                      00013 ;--------------------------------------------------------
+  0000                00014         extern  __mulint
+  0000                00015         extern  __modsint
+  0000                00016         extern  _rand
+  0000                00017         extern  _TRISIO
+  0000                00018         extern  _GPIO
+  0000                00019         extern  _GPIObits
+  0000                00020         extern  __gptrput2
+  0000                00021         extern  __gptrget2
+  0000                00022         extern  __sdcc_gsinit_startup
+                      00023 ;--------------------------------------------------------
+                      00024 ; global declarations
+                      00025 ;--------------------------------------------------------
+  0000                00026         global  _main
+  0000                00027         global  _inicializar_array
+  0000                00028         global  _repetido
+                      00029 
+  0000                00030         global PSAVE
+  0000                00031         global SSAVE
+  0000                00032         global WSAVE
+  0000                00033         global STK12
+  0000                00034         global STK11
+  0000                00035         global STK10
+  0000                00036         global STK09
+  0000                00037         global STK08
+  0000                00038         global STK07
+  0000                00039         global STK06
+  0000                00040         global STK05
+  0000                00041         global STK04
+  0000                00042         global STK03
+  0000                00043         global STK02
+gpasm-1.4.0 #1107 (Jan  1 2021)     bingo.asm   8-28-2024  17:43:39         PAGE  2
+
+
+LOC    OBJECT CODE    LINE  SOURCE TEXT
+  VALUE
+
+  0000                00044         global STK01
+  0000                00045         global STK00
+                      00046 
+                      00047 sharebank udata_ovr 0x0070
+0070                  00048 PSAVE   res 1
+0071                  00049 SSAVE   res 1
+0072                  00050 WSAVE   res 1
+0073                  00051 STK12   res 1
+0074                  00052 STK11   res 1
+0075                  00053 STK10   res 1
+0076                  00054 STK09   res 1
+0077                  00055 STK08   res 1
+0078                  00056 STK07   res 1
+0079                  00057 STK06   res 1
+007A                  00058 STK05   res 1
+007B                  00059 STK04   res 1
+007C                  00060 STK03   res 1
+007D                  00061 STK02   res 1
+007E                  00062 STK01   res 1
+007F                  00063 STK00   res 1
+                      00064 
+                      00065 ;--------------------------------------------------------
+                      00066 ; global definitions
+                      00067 ;--------------------------------------------------------
+                      00068 ;--------------------------------------------------------
+                      00069 ; absolute symbol definitions
+                      00070 ;--------------------------------------------------------
+                      00071 ;--------------------------------------------------------
+                      00072 ; compiler-defined variables
+                      00073 ;--------------------------------------------------------
+                      00074 UDL_bingo_0     udata
+0000                  00075 r0x103D res     1
+0001                  00076 r0x103C res     1
+0002                  00077 r0x103E res     1
+0003                  00078 r0x103F res     1
+0004                  00079 r0x1041 res     1
+0005                  00080 r0x1040 res     1
+0006                  00081 r0x1034 res     1
+0007                  00082 r0x1033 res     1
+0008                  00083 r0x1032 res     1
+0009                  00084 r0x1035 res     1
+000A                  00085 r0x1036 res     1
+000B                  00086 r0x1037 res     1
+000C                  00087 r0x1038 res     1
+000D                  00088 r0x1039 res     1
+000E                  00089 r0x103A res     1
+000F                  00090 r0x1026 res     1
+0010                  00091 r0x1025 res     1
+0011                  00092 r0x1024 res     1
+0012                  00093 r0x1028 res     1
+0013                  00094 r0x1027 res     1
+0014                  00095 r0x1029 res     1
+0015                  00096 r0x102A res     1
+gpasm-1.4.0 #1107 (Jan  1 2021)     bingo.asm   8-28-2024  17:43:39         PAGE  3
+
+
+LOC    OBJECT CODE    LINE  SOURCE TEXT
+  VALUE
+
+0016                  00097 r0x102B res     1
+0017                  00098 r0x102C res     1
+0018                  00099 r0x102D res     1
+0019                  00100 r0x102E res     1
+001A                  00101 r0x1031 res     1
+001B                  00102 r0x1030 res     1
+001C                  00103 _main_ssd_65537_34      res     16
+002C                  00104 _main_nums_generados_65537_34   res     20
+                      00105 ;--------------------------------------------------------
+                      00106 ; initialized data
+                      00107 ;--------------------------------------------------------
+                      00108 ;--------------------------------------------------------
+                      00109 ; initialized absolute data
+                      00110 ;--------------------------------------------------------
+                      00111 ;--------------------------------------------------------
+                      00112 ; overlayable items in internal ram 
+                      00113 ;--------------------------------------------------------
+                      00114 ;       udata_ovr
+                      00115 ;--------------------------------------------------------
+                      00116 ; reset vector 
+                      00117 ;--------------------------------------------------------
+                      00118 STARTUP code 0x0000
+0000   0000           00119         nop
+Message[312]: Page or Bank selection not needed for this device. No code generated.
+                      00120         pagesel __sdcc_gsinit_startup
+0001   2???           00121         goto    __sdcc_gsinit_startup
+                      00122 ;--------------------------------------------------------
+                      00123 ; code
+                      00124 ;--------------------------------------------------------
+                      00125 code_bingo      code
+                      00126 ;***
+                      00127 ;  pBlock Stats: dbName = M
+                      00128 ;***
+                      00129 ;has an exit
+                      00130 ;functions called:
+                      00131 ;   _inicializar_array
+                      00132 ;   _rand
+                      00133 ;   __modsint
+                      00134 ;   _repetido
+                      00135 ;   __mulint
+                      00136 ;   _inicializar_array
+                      00137 ;   _inicializar_array
+                      00138 ;   _rand
+                      00139 ;   __modsint
+                      00140 ;   _repetido
+                      00141 ;   __mulint
+                      00142 ;   _inicializar_array
+                      00143 ;11 compiler assigned registers:
+                      00144 ;   r0x103C
+                      00145 ;   r0x103D
+                      00146 ;   r0x103E
+                      00147 ;   STK01
+                      00148 ;   STK00
+gpasm-1.4.0 #1107 (Jan  1 2021)     bingo.asm   8-28-2024  17:43:39         PAGE  4
+
+
+LOC    OBJECT CODE    LINE  SOURCE TEXT
+  VALUE
+
+                      00149 ;   r0x103F
+                      00150 ;   STK02
+                      00151 ;   r0x1040
+                      00152 ;   r0x1041
+                      00153 ;   r0x1042
+                      00154 ;   STK03
+                      00155 ;; Starting pCode block
+                      00156 S_bingo__main   code
+0000                  00157 _main:
+                      00158 ; 2 exit points
+                      00159 ;       .line   11; "bingo.c"   TRISIO = 0b00100000;            // Pone todos los pines como salidas exc
+                            epto el  5
+0000   3020           00160         MOVLW   0x20
+0001   ????           00161         BANKSEL _TRISIO
+0002   00??           00162         MOVWF   _TRISIO
+                      00163 ;       .line   12; "bingo.c"   GPIO = 0x00;                            // Pone todos los pines en bajo
+0003   ????           00164         BANKSEL _GPIO
+0004   01??           00165         CLRF    _GPIO
+                      00166 ;;/home/sdcc-builder/build/sdcc-build/orig/sdcc/src/pic14/gen.c:6828: size=0, offset=0, AOP_TYPE(res)=8
+                      00167 ;       .line   15; "bingo.c"   unsigned char ssd[16]={0x3F,0x06,0x5B,0x4F,0x66,0x6D,
+0005   303F           00168         MOVLW   0x3f
+0006   ????           00169         BANKSEL _main_ssd_65537_34
+0007   00??           00170         MOVWF   (_main_ssd_65537_34 + 0)
+                      00171 ;;/home/sdcc-builder/build/sdcc-build/orig/sdcc/src/pic14/gen.c:6828: size=0, offset=0, AOP_TYPE(res)=8
+0008   3006           00172         MOVLW   0x06
+0009   00??           00173         MOVWF   (_main_ssd_65537_34 + 1)
+                      00174 ;;/home/sdcc-builder/build/sdcc-build/orig/sdcc/src/pic14/gen.c:6828: size=0, offset=0, AOP_TYPE(res)=8
+000A   305B           00175         MOVLW   0x5b
+000B   00??           00176         MOVWF   (_main_ssd_65537_34 + 2)
+                      00177 ;;/home/sdcc-builder/build/sdcc-build/orig/sdcc/src/pic14/gen.c:6828: size=0, offset=0, AOP_TYPE(res)=8
+000C   304F           00178         MOVLW   0x4f
+000D   00??           00179         MOVWF   (_main_ssd_65537_34 + 3)
+                      00180 ;;/home/sdcc-builder/build/sdcc-build/orig/sdcc/src/pic14/gen.c:6828: size=0, offset=0, AOP_TYPE(res)=8
+000E   3066           00181         MOVLW   0x66
+000F   00??           00182         MOVWF   (_main_ssd_65537_34 + 4)
+                      00183 ;;/home/sdcc-builder/build/sdcc-build/orig/sdcc/src/pic14/gen.c:6828: size=0, offset=0, AOP_TYPE(res)=8
+0010   306D           00184         MOVLW   0x6d
+0011   00??           00185         MOVWF   (_main_ssd_65537_34 + 5)
+                      00186 ;;/home/sdcc-builder/build/sdcc-build/orig/sdcc/src/pic14/gen.c:6828: size=0, offset=0, AOP_TYPE(res)=8
+0012   307D           00187         MOVLW   0x7d
+0013   00??           00188         MOVWF   (_main_ssd_65537_34 + 6)
+                      00189 ;;/home/sdcc-builder/build/sdcc-build/orig/sdcc/src/pic14/gen.c:6828: size=0, offset=0, AOP_TYPE(res)=8
+0014   3007           00190         MOVLW   0x07
+0015   00??           00191         MOVWF   (_main_ssd_65537_34 + 7)
+                      00192 ;;/home/sdcc-builder/build/sdcc-build/orig/sdcc/src/pic14/gen.c:6828: size=0, offset=0, AOP_TYPE(res)=8
+0016   307F           00193         MOVLW   0x7f
+0017   00??           00194         MOVWF   (_main_ssd_65537_34 + 8)
+                      00195 ;;/home/sdcc-builder/build/sdcc-build/orig/sdcc/src/pic14/gen.c:6828: size=0, offset=0, AOP_TYPE(res)=8
+0018   306F           00196         MOVLW   0x6f
+0019   00??           00197         MOVWF   (_main_ssd_65537_34 + 9)
+                      00198 ;;/home/sdcc-builder/build/sdcc-build/orig/sdcc/src/pic14/gen.c:6828: size=0, offset=0, AOP_TYPE(res)=8
+001A   3077           00199         MOVLW   0x77
+001B   00??           00200         MOVWF   (_main_ssd_65537_34 + 10)
+gpasm-1.4.0 #1107 (Jan  1 2021)     bingo.asm   8-28-2024  17:43:39         PAGE  5
+
+
+LOC    OBJECT CODE    LINE  SOURCE TEXT
+  VALUE
+
+                      00201 ;;/home/sdcc-builder/build/sdcc-build/orig/sdcc/src/pic14/gen.c:6828: size=0, offset=0, AOP_TYPE(res)=8
+001C   307C           00202         MOVLW   0x7c
+001D   00??           00203         MOVWF   (_main_ssd_65537_34 + 11)
+                      00204 ;;/home/sdcc-builder/build/sdcc-build/orig/sdcc/src/pic14/gen.c:6828: size=0, offset=0, AOP_TYPE(res)=8
+001E   3039           00205         MOVLW   0x39
+001F   00??           00206         MOVWF   (_main_ssd_65537_34 + 12)
+                      00207 ;;/home/sdcc-builder/build/sdcc-build/orig/sdcc/src/pic14/gen.c:6828: size=0, offset=0, AOP_TYPE(res)=8
+0020   305E           00208         MOVLW   0x5e
+0021   00??           00209         MOVWF   (_main_ssd_65537_34 + 13)
+                      00210 ;;/home/sdcc-builder/build/sdcc-build/orig/sdcc/src/pic14/gen.c:6828: size=0, offset=0, AOP_TYPE(res)=8
+0022   3079           00211         MOVLW   0x79
+0023   00??           00212         MOVWF   (_main_ssd_65537_34 + 14)
+                      00213 ;;/home/sdcc-builder/build/sdcc-build/orig/sdcc/src/pic14/gen.c:6828: size=0, offset=0, AOP_TYPE(res)=8
+0024   3071           00214         MOVLW   0x71
+0025   00??           00215         MOVWF   (_main_ssd_65537_34 + 15)
+                      00216 ;       .line   18; "bingo.c"   inicializar_array(nums_generados);
+0026   30??           00217         MOVLW   high (_main_nums_generados_65537_34 + 0)
+0027   ????           00218         BANKSEL r0x103C
+0028   00??           00219         MOVWF   r0x103C
+0029   30??           00220         MOVLW   (_main_nums_generados_65537_34 + 0)
+002A   00??           00221         MOVWF   r0x103D
+002B   01??           00222         CLRF    r0x103E
+002C   08??           00223         MOVF    r0x103D,W
+002D   00??           00224         MOVWF   STK01
+002E   08??           00225         MOVF    r0x103C,W
+002F   00??           00226         MOVWF   STK00
+0030   3000           00227         MOVLW   0x00
+Message[312]: Page or Bank selection not needed for this device. No code generated.
+                      00228         PAGESEL _inicializar_array
+0031   2???           00229         CALL    _inicializar_array
+Message[312]: Page or Bank selection not needed for this device. No code generated.
+                      00230         PAGESEL $
+                      00231 ;       .line   19; "bingo.c"   int cont = 0;
+0032   ????           00232         BANKSEL r0x103D
+0033   01??           00233         CLRF    r0x103D
+0034   01??           00234         CLRF    r0x103C
+0035                  00235 _00113_DS_:
+                      00236 ;       .line   23; "bingo.c"   if (GP5 == 1) // Si se detecta que se presionó el botón
+0035   ????           00237         BANKSEL r0x103E
+0036   01??           00238         CLRF    r0x103E
+0037   ????           00239         BANKSEL _GPIObits
+0038   1E??           00240         BTFSS   _GPIObits,5
+0039   2???           00241         GOTO    _00001_DS_
+003A   ????           00242         BANKSEL r0x103E
+003B   0A??           00243         INCF    r0x103E,F
+003C                  00244 _00001_DS_:
+003C   ????           00245         BANKSEL r0x103E
+003D   08??           00246         MOVF    r0x103E,W
+003E   3A01           00247         XORLW   0x01
+003F   1D03           00248         BTFSS   STATUS,2
+0040   2???           00249         GOTO    _00113_DS_
+0041                  00250 _00105_DS_:
+                      00251 ;       .line   26; "bingo.c"   random_int = rand() % (9 - 0 + 1) + 0;; // Genera un número aleatorio
+gpasm-1.4.0 #1107 (Jan  1 2021)     bingo.asm   8-28-2024  17:43:39         PAGE  6
+
+
+LOC    OBJECT CODE    LINE  SOURCE TEXT
+  VALUE
+
+Message[312]: Page or Bank selection not needed for this device. No code generated.
+                      00252         PAGESEL _rand
+0041   2???           00253         CALL    _rand
+Message[312]: Page or Bank selection not needed for this device. No code generated.
+                      00254         PAGESEL $
+0042   ????           00255         BANKSEL r0x103F
+0043   00??           00256         MOVWF   r0x103F
+0044   08??           00257         MOVF    STK00,W
+0045   00??           00258         MOVWF   r0x103E
+0046   300A           00259         MOVLW   0x0a
+0047   00??           00260         MOVWF   STK02
+0048   3000           00261         MOVLW   0x00
+0049   00??           00262         MOVWF   STK01
+004A   08??           00263         MOVF    r0x103E,W
+004B   00??           00264         MOVWF   STK00
+004C   08??           00265         MOVF    r0x103F,W
+Message[312]: Page or Bank selection not needed for this device. No code generated.
+                      00266         PAGESEL __modsint
+004D   2???           00267         CALL    __modsint
+Message[312]: Page or Bank selection not needed for this device. No code generated.
+                      00268         PAGESEL $
+004E   ????           00269         BANKSEL r0x103F
+004F   00??           00270         MOVWF   r0x103F
+0050   08??           00271         MOVF    STK00,W
+0051   00??           00272         MOVWF   r0x103E
+                      00273 ;       .line   27; "bingo.c"   } while (repetido (nums_generados, random_int));
+0052   30??           00274         MOVLW   high (_main_nums_generados_65537_34 + 0)
+0053   00??           00275         MOVWF   r0x1040
+0054   30??           00276         MOVLW   (_main_nums_generados_65537_34 + 0)
+0055   00??           00277         MOVWF   r0x1041
+                      00278 ;;1     CLRF    r0x1042
+0056   08??           00279         MOVF    r0x103E,W
+0057   00??           00280         MOVWF   STK03
+0058   08??           00281         MOVF    r0x103F,W
+0059   00??           00282         MOVWF   STK02
+005A   08??           00283         MOVF    r0x1041,W
+005B   00??           00284         MOVWF   STK01
+005C   08??           00285         MOVF    r0x1040,W
+005D   00??           00286         MOVWF   STK00
+005E   3000           00287         MOVLW   0x00
+Message[312]: Page or Bank selection not needed for this device. No code generated.
+                      00288         PAGESEL _repetido
+005F   2???           00289         CALL    _repetido
+Message[312]: Page or Bank selection not needed for this device. No code generated.
+                      00290         PAGESEL $
+0060   ????           00291         BANKSEL r0x1040
+0061   00??           00292         MOVWF   r0x1040
+0062   08??           00293         MOVF    STK00,W
+0063   00??           00294         MOVWF   r0x1041
+0064   04??           00295         IORWF   r0x1040,W
+0065   1D03           00296         BTFSS   STATUS,2
+0066   2???           00297         GOTO    _00105_DS_
+                      00298 ;       .line   29; "bingo.c"   nums_generados[cont] = random_int;
+gpasm-1.4.0 #1107 (Jan  1 2021)     bingo.asm   8-28-2024  17:43:39         PAGE  7
+
+
+LOC    OBJECT CODE    LINE  SOURCE TEXT
+  VALUE
+
+0067   08??           00299         MOVF    r0x103D,W
+0068   00??           00300         MOVWF   STK02
+0069   08??           00301         MOVF    r0x103C,W
+006A   00??           00302         MOVWF   STK01
+006B   3002           00303         MOVLW   0x02
+006C   00??           00304         MOVWF   STK00
+006D   3000           00305         MOVLW   0x00
+Message[312]: Page or Bank selection not needed for this device. No code generated.
+                      00306         PAGESEL __mulint
+006E   2???           00307         CALL    __mulint
+Message[312]: Page or Bank selection not needed for this device. No code generated.
+                      00308         PAGESEL $
+006F   ????           00309         BANKSEL r0x1040
+0070   00??           00310         MOVWF   r0x1040
+0071   08??           00311         MOVF    STK00,W
+0072   00??           00312         MOVWF   r0x1041
+0073   3E??           00313         ADDLW   (_main_nums_generados_65537_34 + 0)
+0074   00??           00314         MOVWF   r0x1041
+0075   08??           00315         MOVF    r0x1040,W
+0076   1803           00316         BTFSC   STATUS,0
+0077   0F??           00317         INCFSZ  r0x1040,W
+0078   3E??           00318         ADDLW   high (_main_nums_generados_65537_34 + 0)
+0079   00??           00319         MOVWF   r0x1040
+007A   08??           00320         MOVF    r0x1041,W
+007B   1283           00321         BANKSEL FSR
+007C   0084           00322         MOVWF   FSR
+007D   1383           00323         BCF     STATUS,7
+007E   ????           00324         BANKSEL r0x1040
+007F   18??           00325         BTFSC   r0x1040,0
+0080   1783           00326         BSF     STATUS,7
+0081   08??           00327         MOVF    r0x103E,W
+0082   1283           00328         BANKSEL INDF
+0083   0080           00329         MOVWF   INDF
+0084   0A84           00330         INCF    FSR,F
+0085   ????           00331         BANKSEL r0x103F
+0086   08??           00332         MOVF    r0x103F,W
+0087   1283           00333         BANKSEL INDF
+0088   0080           00334         MOVWF   INDF
+                      00335 ;       .line   30; "bingo.c"   cont++;
+0089   ????           00336         BANKSEL r0x103D
+008A   0A??           00337         INCF    r0x103D,F
+008B   1903           00338         BTFSC   STATUS,2
+008C   0A??           00339         INCF    r0x103C,F
+                      00340 ;       .line   31; "bingo.c"   if (cont == 10) {
+008D   08??           00341         MOVF    r0x103D,W
+008E   3A0A           00342         XORLW   0x0a
+008F   1D03           00343         BTFSS   STATUS,2
+0090   2???           00344         GOTO    _00113_DS_
+0091   08??           00345         MOVF    r0x103C,W
+0092   3A00           00346         XORLW   0x00
+0093   1D03           00347         BTFSS   STATUS,2
+0094   2???           00348         GOTO    _00113_DS_
+                      00349 ;       .line   32; "bingo.c"   cont = 0; // Reinicia el contador
+gpasm-1.4.0 #1107 (Jan  1 2021)     bingo.asm   8-28-2024  17:43:39         PAGE  8
+
+
+LOC    OBJECT CODE    LINE  SOURCE TEXT
+  VALUE
+
+0095   01??           00350         CLRF    r0x103D
+0096   01??           00351         CLRF    r0x103C
+                      00352 ;       .line   33; "bingo.c"   inicializar_array(nums_generados);
+0097   30??           00353         MOVLW   high (_main_nums_generados_65537_34 + 0)
+0098   00??           00354         MOVWF   r0x103F
+0099   30??           00355         MOVLW   (_main_nums_generados_65537_34 + 0)
+009A   00??           00356         MOVWF   r0x103E
+009B   01??           00357         CLRF    r0x1041
+009C   08??           00358         MOVF    r0x103E,W
+009D   00??           00359         MOVWF   STK01
+009E   08??           00360         MOVF    r0x103F,W
+009F   00??           00361         MOVWF   STK00
+00A0   3000           00362         MOVLW   0x00
+Message[312]: Page or Bank selection not needed for this device. No code generated.
+                      00363         PAGESEL _inicializar_array
+00A1   2???           00364         CALL    _inicializar_array
+Message[312]: Page or Bank selection not needed for this device. No code generated.
+                      00365         PAGESEL $
+00A2   2???           00366         GOTO    _00113_DS_
+                      00367 ;       .line   41; "bingo.c"   }
+00A3   0008           00368         RETURN  
+                      00369 ; exit point of _main
+                      00370 
+                      00371 ;***
+                      00372 ;  pBlock Stats: dbName = C
+                      00373 ;***
+                      00374 ;has an exit
+                      00375 ;functions called:
+                      00376 ;   __gptrget2
+                      00377 ;   __gptrget2
+                      00378 ;18 compiler assigned registers:
+                      00379 ;   r0x1024
+                      00380 ;   STK00
+                      00381 ;   r0x1025
+                      00382 ;   STK01
+                      00383 ;   r0x1026
+                      00384 ;   STK02
+                      00385 ;   r0x1027
+                      00386 ;   STK03
+                      00387 ;   r0x1028
+                      00388 ;   r0x1029
+                      00389 ;   r0x102A
+                      00390 ;   r0x102B
+                      00391 ;   r0x102C
+                      00392 ;   r0x102D
+                      00393 ;   r0x102E
+                      00394 ;   r0x102F
+                      00395 ;   r0x1030
+                      00396 ;   r0x1031
+                      00397 ;; Starting pCode block
+                      00398 S_bingo__repetido       code
+0000                  00399 _repetido:
+                      00400 ; 2 exit points
+gpasm-1.4.0 #1107 (Jan  1 2021)     bingo.asm   8-28-2024  17:43:39         PAGE  9
+
+
+LOC    OBJECT CODE    LINE  SOURCE TEXT
+  VALUE
+
+                      00401 ;       .line   49; "bingo.c"   int repetido(unsigned int arr[], int num) {
+0000   ????           00402         BANKSEL r0x1024
+0001   00??           00403         MOVWF   r0x1024
+0002   08??           00404         MOVF    STK00,W
+0003   00??           00405         MOVWF   r0x1025
+0004   08??           00406         MOVF    STK01,W
+0005   00??           00407         MOVWF   r0x1026
+0006   08??           00408         MOVF    STK02,W
+0007   00??           00409         MOVWF   r0x1027
+0008   08??           00410         MOVF    STK03,W
+0009   00??           00411         MOVWF   r0x1028
+                      00412 ;       .line   50; "bingo.c"   for (int i = 0; i < 10; i++) {
+000A   01??           00413         CLRF    r0x1029
+000B   01??           00414         CLRF    r0x102A
+000C   01??           00415         CLRF    r0x102B
+000D   01??           00416         CLRF    r0x102C
+                      00417 ;;signed compare: left < lit(0xA=10), size=2, mask=ffff
+000E                  00418 _00142_DS_:
+000E   ????           00419         BANKSEL r0x102A
+000F   08??           00420         MOVF    r0x102A,W
+0010   3E80           00421         ADDLW   0x80
+0011   3E80           00422         ADDLW   0x80
+0012   1D03           00423         BTFSS   STATUS,2
+0013   2???           00424         GOTO    _00158_DS_
+0014   300A           00425         MOVLW   0x0a
+0015   02??           00426         SUBWF   r0x1029,W
+0016                  00427 _00158_DS_:
+0016   1803           00428         BTFSC   STATUS,0
+0017   2???           00429         GOTO    _00140_DS_
+                      00430 ;;genSkipc:3307: created from rifx:0x7ffc814b8580
+                      00431 ;       .line   51; "bingo.c"   if (arr[i] == num) {
+0018   ????           00432         BANKSEL r0x102B
+0019   08??           00433         MOVF    r0x102B,W
+001A   07??           00434         ADDWF   r0x1026,W
+001B   00??           00435         MOVWF   r0x102D
+001C   08??           00436         MOVF    r0x1025,W
+001D   00??           00437         MOVWF   r0x102E
+001E   08??           00438         MOVF    r0x102C,W
+001F   1803           00439         BTFSC   STATUS,0
+0020   0F??           00440         INCFSZ  r0x102C,W
+0021   07??           00441         ADDWF   r0x102E,F
+                      00442 ;;104   MOVF    r0x1024,W
+                      00443 ;;102   MOVWF   r0x102F
+0022   08??           00444         MOVF    r0x102D,W
+0023   00??           00445         MOVWF   STK01
+0024   08??           00446         MOVF    r0x102E,W
+0025   00??           00447         MOVWF   STK00
+                      00448 ;;103   MOVF    r0x102F,W
+0026   08??           00449         MOVF    r0x1024,W
+Message[312]: Page or Bank selection not needed for this device. No code generated.
+                      00450         PAGESEL __gptrget2
+0027   2???           00451         CALL    __gptrget2
+Message[312]: Page or Bank selection not needed for this device. No code generated.
+gpasm-1.4.0 #1107 (Jan  1 2021)     bingo.asm   8-28-2024  17:43:39         PAGE 10
+
+
+LOC    OBJECT CODE    LINE  SOURCE TEXT
+  VALUE
+
+                      00452         PAGESEL $
+0028   ????           00453         BANKSEL r0x1030
+0029   00??           00454         MOVWF   r0x1030
+002A   08??           00455         MOVF    STK00,W
+002B   00??           00456         MOVWF   r0x1031
+                      00457 ;;106   MOVF    r0x1028,W
+002C   08??           00458         MOVF    r0x1027,W
+002D   00??           00459         MOVWF   r0x102E
+                      00460 ;;105   MOVF    r0x102D,W
+002E   08??           00461         MOVF    r0x1028,W
+002F   00??           00462         MOVWF   r0x102D
+0030   06??           00463         XORWF   r0x1031,W
+0031   1D03           00464         BTFSS   STATUS,2
+0032   2???           00465         GOTO    _00143_DS_
+0033   08??           00466         MOVF    r0x102E,W
+0034   06??           00467         XORWF   r0x1030,W
+0035   1D03           00468         BTFSS   STATUS,2
+0036   2???           00469         GOTO    _00143_DS_
+                      00470 ;       .line   52; "bingo.c"   return 1; // El número es repetido
+0037   3001           00471         MOVLW   0x01
+0038   00??           00472         MOVWF   STK00
+0039   3000           00473         MOVLW   0x00
+003A   2???           00474         GOTO    _00144_DS_
+003B                  00475 _00143_DS_:
+                      00476 ;       .line   50; "bingo.c"   for (int i = 0; i < 10; i++) {
+003B   3002           00477         MOVLW   0x02
+003C   ????           00478         BANKSEL r0x102B
+003D   07??           00479         ADDWF   r0x102B,F
+003E   1803           00480         BTFSC   STATUS,0
+003F   0A??           00481         INCF    r0x102C,F
+0040   0A??           00482         INCF    r0x1029,F
+0041   1903           00483         BTFSC   STATUS,2
+0042   0A??           00484         INCF    r0x102A,F
+0043   2???           00485         GOTO    _00142_DS_
+0044                  00486 _00140_DS_:
+                      00487 ;       .line   55; "bingo.c"   return 0; // El número no es repetido
+0044   3000           00488         MOVLW   0x00
+0045   00??           00489         MOVWF   STK00
+0046   3000           00490         MOVLW   0x00
+0047                  00491 _00144_DS_:
+                      00492 ;       .line   56; "bingo.c"   }
+0047   0008           00493         RETURN  
+                      00494 ; exit point of _repetido
+                      00495 
+                      00496 ;***
+                      00497 ;  pBlock Stats: dbName = C
+                      00498 ;***
+                      00499 ;has an exit
+                      00500 ;functions called:
+                      00501 ;   __gptrput2
+                      00502 ;   __gptrput2
+                      00503 ;14 compiler assigned registers:
+                      00504 ;   r0x1032
+gpasm-1.4.0 #1107 (Jan  1 2021)     bingo.asm   8-28-2024  17:43:39         PAGE 11
+
+
+LOC    OBJECT CODE    LINE  SOURCE TEXT
+  VALUE
+
+                      00505 ;   STK00
+                      00506 ;   r0x1033
+                      00507 ;   STK01
+                      00508 ;   r0x1034
+                      00509 ;   r0x1035
+                      00510 ;   r0x1036
+                      00511 ;   r0x1037
+                      00512 ;   r0x1038
+                      00513 ;   r0x1039
+                      00514 ;   r0x103A
+                      00515 ;   r0x103B
+                      00516 ;   STK02
+                      00517 ;   STK03
+                      00518 ;; Starting pCode block
+                      00519 S_bingo__inicializar_array      code
+0000                  00520 _inicializar_array:
+                      00521 ; 2 exit points
+                      00522 ;       .line   43; "bingo.c"   void inicializar_array(unsigned int arr[]) {
+0000   ????           00523         BANKSEL r0x1032
+0001   00??           00524         MOVWF   r0x1032
+0002   08??           00525         MOVF    STK00,W
+0003   00??           00526         MOVWF   r0x1033
+0004   08??           00527         MOVF    STK01,W
+0005   00??           00528         MOVWF   r0x1034
+                      00529 ;       .line   44; "bingo.c"   for (int i = 0; i < 10; i++) {
+0006   01??           00530         CLRF    r0x1035
+0007   01??           00531         CLRF    r0x1036
+0008   01??           00532         CLRF    r0x1037
+0009   01??           00533         CLRF    r0x1038
+                      00534 ;;signed compare: left < lit(0xA=10), size=2, mask=ffff
+000A                  00535 _00120_DS_:
+000A   ????           00536         BANKSEL r0x1036
+000B   08??           00537         MOVF    r0x1036,W
+000C   3E80           00538         ADDLW   0x80
+000D   3E80           00539         ADDLW   0x80
+000E   1D03           00540         BTFSS   STATUS,2
+000F   2???           00541         GOTO    _00133_DS_
+0010   300A           00542         MOVLW   0x0a
+0011   02??           00543         SUBWF   r0x1035,W
+0012                  00544 _00133_DS_:
+0012   1803           00545         BTFSC   STATUS,0
+0013   2???           00546         GOTO    _00122_DS_
+                      00547 ;;genSkipc:3307: created from rifx:0x7ffc814b8580
+                      00548 ;       .line   45; "bingo.c"   arr[i] = 10;  // Fuera del rango de 0-9
+0014   ????           00549         BANKSEL r0x1037
+0015   08??           00550         MOVF    r0x1037,W
+0016   07??           00551         ADDWF   r0x1034,W
+0017   00??           00552         MOVWF   r0x1039
+0018   08??           00553         MOVF    r0x1033,W
+0019   00??           00554         MOVWF   r0x103A
+001A   08??           00555         MOVF    r0x1038,W
+001B   1803           00556         BTFSC   STATUS,0
+001C   0F??           00557         INCFSZ  r0x1038,W
+gpasm-1.4.0 #1107 (Jan  1 2021)     bingo.asm   8-28-2024  17:43:39         PAGE 12
+
+
+LOC    OBJECT CODE    LINE  SOURCE TEXT
+  VALUE
+
+001D   07??           00558         ADDWF   r0x103A,F
+                      00559 ;;101   MOVF    r0x1032,W
+                      00560 ;;99    MOVWF   r0x103B
+001E   3000           00561         MOVLW   0x00
+001F   00??           00562         MOVWF   STK02
+0020   300A           00563         MOVLW   0x0a
+0021   00??           00564         MOVWF   STK03
+0022   08??           00565         MOVF    r0x1039,W
+0023   00??           00566         MOVWF   STK01
+0024   08??           00567         MOVF    r0x103A,W
+0025   00??           00568         MOVWF   STK00
+                      00569 ;;100   MOVF    r0x103B,W
+0026   08??           00570         MOVF    r0x1032,W
+Message[312]: Page or Bank selection not needed for this device. No code generated.
+                      00571         PAGESEL __gptrput2
+0027   2???           00572         CALL    __gptrput2
+Message[312]: Page or Bank selection not needed for this device. No code generated.
+                      00573         PAGESEL $
+                      00574 ;       .line   44; "bingo.c"   for (int i = 0; i < 10; i++) {
+0028   3002           00575         MOVLW   0x02
+0029   ????           00576         BANKSEL r0x1037
+002A   07??           00577         ADDWF   r0x1037,F
+002B   1803           00578         BTFSC   STATUS,0
+002C   0A??           00579         INCF    r0x1038,F
+002D   0A??           00580         INCF    r0x1035,F
+002E   1903           00581         BTFSC   STATUS,2
+002F   0A??           00582         INCF    r0x1036,F
+0030   2???           00583         GOTO    _00120_DS_
+0031                  00584 _00122_DS_:
+                      00585 ;       .line   47; "bingo.c"   }
+0031   0008           00586         RETURN  
+                      00587 ; exit point of _inicializar_array
+                      00588 
+                      00589 
+                      00590 ;       code size estimation:
+                      00591 ;         258+   44 =   302 instructions (  692 byte)
+                      00592 
+                      00593         end
+gpasm-1.4.0 #1107 (Jan  1 2021)     bingo.asm   8-28-2024  17:43:39         PAGE 13
+
+
+SYMBOL TABLE
+  LABEL                             VALUE
+
+ADCON0                            0000001F
+ADCS0                             00000004
+ADCS1                             00000005
+ADCS2                             00000006
+ADFM                              00000007
+ADIE                              00000006
+ADIF                              00000006
+ADON                              00000000
+ADRESH                            0000001E
+ADRESL                            0000009E
+ANS0                              00000000
+ANS1                              00000001
+ANS2                              00000002
+ANS3                              00000003
+ANSEL                             0000009F
+C                                 00000000
+CCP1CON                           00000015
+CCP1IE                            00000005
+CCP1IF                            00000005
+CCP1M0                            00000000
+CCP1M1                            00000001
+CCP1M2                            00000002
+CCP1M3                            00000003
+CCPR1                             00000013
+CCPR1H                            00000014
+CCPR1L                            00000013
+CHS0                              00000002
+CHS1                              00000003
+CHS2                              00000004
+CINV                              00000004
+CIS                               00000003
+CM0                               00000000
+CM1                               00000001
+CM2                               00000002
+CMCON0                            00000019
+CMCON1                            0000001A
+CMIE                              00000003
+CMIF                              00000003
+CMSYNC                            00000000
+COUT                              00000006
+DC                                00000001
+DC1B0                             00000004
+DC1B1                             00000005
+EEADR                             0000009B
+EECON1                            0000009C
+EECON2                            0000009D
+EEDAT                             0000009A
+EEDATA                            0000009A
+EEIE                              00000007
+EEIF                              00000007
+F                                 00000001
+FSR                               00000004
+GIE                               00000007
+gpasm-1.4.0 #1107 (Jan  1 2021)     bingo.asm   8-28-2024  17:43:39         PAGE 14
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+GO                                00000001
+GO_DONE                           00000001
+GO_NOT_DONE                       00000001
+GP0                               00000000
+GP1                               00000001
+GP2                               00000002
+GP3                               00000003
+GP4                               00000004
+GP5                               00000005
+GPIE                              00000003
+GPIF                              00000000
+GPIO                              00000005
+HTS                               00000002
+INDF                              00000000
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+IOC                               00000096
+IOC0                              00000000
+IOC1                              00000001
+IOC2                              00000002
+IOC3                              00000003
+IOC4                              00000004
+IOC5                              00000005
+IOCA                              00000096
+IOCA0                             00000000
+IOCA1                             00000001
+IOCA2                             00000002
+IOCA3                             00000003
+IOCA4                             00000004
+IOCA5                             00000005
+IRCF0                             00000004
+IRCF1                             00000005
+IRCF2                             00000006
+IRP                               00000007
+LTS                               00000001
+NOT_BOD                           00000000
+NOT_DONE                          00000001
+NOT_GPPU                          00000007
+NOT_PD                            00000003
+NOT_POR                           00000001
+NOT_T1SYNC                        00000002
+NOT_TO                            00000004
+OPTION_REG                        00000081
+OSCCON                            0000008F
+OSCTUNE                           00000090
+OSFIE                             00000002
+OSFIF                             00000002
+OSTS                              00000003
+PCL                               00000002
+PCLATH                            0000000A
+PCON                              0000008E
+gpasm-1.4.0 #1107 (Jan  1 2021)     bingo.asm   8-28-2024  17:43:39         PAGE 15
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+PEIE                              00000006
+PIE1                              0000008C
+PIR1                              0000000C
+PR2                               00000092
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+PSAVE                             00000070
+RD                                00000000
+RP0                               00000005
+RP1                               00000006
+SBODEN                            00000004
+SCS                               00000000
+SSAVE                             00000071
+STATUS                            00000003
+STK00                             0000007F
+STK01                             0000007E
+STK02                             0000007D
+STK03                             0000007C
+STK04                             0000007B
+STK05                             0000007A
+STK06                             00000079
+STK07                             00000078
+STK08                             00000077
+STK09                             00000076
+STK10                             00000075
+STK11                             00000074
+STK12                             00000073
+SWDTEN                            00000000
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+T1CKPS0                           00000004
+T1CKPS1                           00000005
+T1CON                             00000010
+T1GE                              00000006
+T1GINV                            00000007
+T1GSS                             00000001
+T1IE                              00000000
+T1IF                              00000000
+T1OSCEN                           00000003
+T2CKPS0                           00000000
+T2CKPS1                           00000001
+T2CON                             00000012
+T2IE                              00000001
+T2IF                              00000001
+TMR0                              00000001
+TMR0IE                            00000005
+TMR0IF                            00000002
+TMR1                              0000000E
+TMR1CS                            00000001
+gpasm-1.4.0 #1107 (Jan  1 2021)     bingo.asm   8-28-2024  17:43:39         PAGE 16
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+TMR1GE                            00000006
+TMR1H                             0000000F
+TMR1IE                            00000000
+TMR1IF                            00000000
+TMR1L                             0000000E
+TMR1ON                            00000000
+TMR2                              00000011
+TMR2IE                            00000001
+TMR2IF                            00000001
+TMR2ON                            00000002
+TOUTPS0                           00000003
+TOUTPS1                           00000004
+TOUTPS2                           00000005
+TOUTPS3                           00000006
+TRISIO                            00000085
+TRISIO0                           00000000
+TRISIO1                           00000001
+TRISIO2                           00000002
+TRISIO3                           00000003
+TRISIO4                           00000004
+TRISIO5                           00000005
+TUN0                              00000000
+TUN1                              00000001
+TUN2                              00000002
+TUN3                              00000003
+TUN4                              00000004
+ULPWUE                            00000005
+VCFG                              00000006
+VR0                               00000000
+VR1                               00000001
+VR2                               00000002
+VR3                               00000003
+VRCON                             00000099
+VREN                              00000007
+VRR                               00000005
+W                                 00000000
+WDTCON                            00000018
+WDTPS0                            00000001
+WDTPS1                            00000002
+WDTPS2                            00000003
+WDTPS3                            00000004
+WPU                               00000095
+WPU0                              00000000
+WPU1                              00000001
+WPU2                              00000002
+WPU4                              00000004
+WPU5                              00000005
+WPUA                              00000095
+WPUA0                             00000000
+WPUA1                             00000001
+WPUA2                             00000002
+WPUA4                             00000004
+WPUA5                             00000005
+gpasm-1.4.0 #1107 (Jan  1 2021)     bingo.asm   8-28-2024  17:43:39         PAGE 17
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+WR                                00000001
+WREN                              00000002
+WRERR                             00000003
+WSAVE                             00000072
+Z                                 00000002
+_00001_DS_                        0000003C
+_00105_DS_                        00000041
+_00113_DS_                        00000035
+_00120_DS_                        0000000A
+_00122_DS_                        00000031
+_00133_DS_                        00000012
+_00140_DS_                        00000044
+_00142_DS_                        0000000E
+_00143_DS_                        0000003B
+_00144_DS_                        00000047
+_00158_DS_                        00000016
+_BOD_NSLEEP                       00003EFF
+_BOD_OFF                          00003CFF
+_BOD_ON                           00003FFF
+_BOD_SBODEN                       00003DFF
+_BOREN_NSLEEP                     00003EFF
+_BOREN_OFF                        00003CFF
+_BOREN_ON                         00003FFF
+_BOREN_SBODEN                     00003DFF
+_CONFIG                           00002007
+_CPD_OFF                          00003FFF
+_CPD_ON                           00003F7F
+_CP_OFF                           00003FFF
+_CP_ON                            00003FBF
+_DEVID1                           00002006
+_EC_OSC                           00003FFB
+_EXTRC                            00003FFF
+_EXTRCIO                          00003FFE
+_EXTRC_OSC_CLKOUT                 00003FFF
+_EXTRC_OSC_NOCLKOUT               00003FFE
+_FCMEN_OFF                        000037FF
+_FCMEN_ON                         00003FFF
+_FOSC_EC                          00003FFB
+_FOSC_EXTRCCLK                    00003FFF
+_FOSC_EXTRCIO                     00003FFE
+_FOSC_HS                          00003FFA
+_FOSC_INTOSCCLK                   00003FFD
+_FOSC_INTOSCIO                    00003FFC
+_FOSC_LP                          00003FF8
+_FOSC_XT                          00003FF9
+_GPIO                             00000000
+_GPIObits                         00000000
+_HS_OSC                           00003FFA
+_IDLOC0                           00002000
+_IDLOC1                           00002001
+_IDLOC2                           00002002
+_IDLOC3                           00002003
+_IESO_OFF                         00003BFF
+gpasm-1.4.0 #1107 (Jan  1 2021)     bingo.asm   8-28-2024  17:43:39         PAGE 18
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+_IESO_ON                          00003FFF
+_INTOSC                           00003FFD
+_INTOSCIO                         00003FFC
+_INTRC_OSC_CLKOUT                 00003FFD
+_INTRC_OSC_NOCLKOUT               00003FFC
+_LP_OSC                           00003FF8
+_MCLRE_OFF                        00003FDF
+_MCLRE_ON                         00003FFF
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FEF
+_TRISIO                           00000000
+_WDTE_OFF                         00003FF7
+_WDTE_ON                          00003FFF
+_WDT_OFF                          00003FF7
+_WDT_ON                           00003FFF
+_XT_OSC                           00003FF9
+__12F683                          00000001
+__CODE_END                        000007FF
+__CODE_START                      00000000
+__COMMON_RAM_END                  0000007F
+__COMMON_RAM_START                00000070
+__EEPROM_END                      000021FF
+__EEPROM_START                    00002100
+__VECTOR_INT                      00000004
+__VECTOR_RESET                    00000000
+__gptrget2                        00000000
+__gptrput2                        00000000
+__modsint                         00000000
+__mulint                          00000000
+__sdcc_gsinit_startup             00000000
+_inicializar_array                00000000
+_main                             00000000
+_main_nums_generados_65537_34     0000002C
+_main_ssd_65537_34                0000001C
+_rand                             00000000
+_repetido                         00000000
+r0x1024                           00000011
+r0x1025                           00000010
+r0x1026                           0000000F
+r0x1027                           00000013
+r0x1028                           00000012
+r0x1029                           00000014
+r0x102A                           00000015
+r0x102B                           00000016
+r0x102C                           00000017
+r0x102D                           00000018
+r0x102E                           00000019
+r0x1030                           0000001B
+r0x1031                           0000001A
+r0x1032                           00000008
+r0x1033                           00000007
+r0x1034                           00000006
+r0x1035                           00000009
+gpasm-1.4.0 #1107 (Jan  1 2021)     bingo.asm   8-28-2024  17:43:39         PAGE 19
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+r0x1036                           0000000A
+r0x1037                           0000000B
+r0x1038                           0000000C
+r0x1039                           0000000D
+r0x103A                           0000000E
+r0x103C                           00000001
+r0x103D                           00000000
+r0x103E                           00000002
+r0x103F                           00000003
+r0x1040                           00000005
+r0x1041                           00000004
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :    17 reported,     0 suppressed
+
+
