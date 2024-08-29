@@ -4,7 +4,7 @@
 
 <item itemtype="Ground" CircId="Ground-22" mainComp="false" Show_id="false" Show_Val="false" Pos="-232,-304" rotation="0" hflip="1" vflip="1" label="Ground-22" idLabPos="-16,8" labelrot="0" valLabPos="-16,20" valLabRot="0" />
 
-<item itemtype="Subcircuit" CircId="74HC595-17" mainComp="false" Show_id="true" Show_Val="false" Pos="-224,-392" rotation="0" hflip="1" vflip="1" label="74HC595-17" idLabPos="0,-20" labelrot="0" valLabPos="-16,20" valLabRot="0" Input_High_V="2.5 V" Input_Low_V="2.5 V" Input_Imped="1e+09 Ω" Out_High_V="5 V" Out_Low_V="0 V" Out_Imped="40 Ω" Tpd_ps="10000 ps" Tr_ps="3000 ps" Tf_ps="4000 ps" Logic_Symbol="true" />
+<item itemtype="Subcircuit" CircId="74HC595-17" mainComp="false" Show_id="true" Show_Val="false" Pos="-224,-392" rotation="0" hflip="1" vflip="1" label="74HC595" idLabPos="0,-20" labelrot="0" valLabPos="-16,20" valLabRot="0" Input_High_V="2.5 V" Input_Low_V="2.5 V" Input_Imped="1e+09 Ω" Out_High_V="5 V" Out_Low_V="0 V" Out_Imped="40 Ω" Tpd_ps="10000 ps" Tr_ps="3000 ps" Tf_ps="4000 ps" Logic_Symbol="true" />
 
 <item itemtype="Seven Segment" CircId="Seven Segment-21" mainComp="false" Show_id="false" Show_Val="false" Pos="-136,-352" rotation="0" hflip="1" vflip="1" label="Seven Segment-21" idLabPos="20,-44" labelrot="0" valLabPos="-16,20" valLabRot="0" Color="Yellow" NumDisplays="1 _7seg" Vertical_Pins="false" CommonCathode="true" Threshold="2.4 V" MaxCurrent="0.02 A" Resistance="1 Ω" />
 
@@ -38,8 +38,6 @@
 
 <item itemtype="Connector" uid="Connector-50" startpinid="p12F683-14-PORTP2" endpinid="74HC595-17-STC" pointList="-272,-368,-232,-368,-232,-376" />
 
-<item itemtype="Connector" uid="Connector-55" startpinid="Push-27-switch0pinN" endpinid="p12F683-14-PORTP5" pointList="-348,-384,-320,-384" />
-
 <item itemtype="Connector" uid="Connector-40" startpinid="CD4026-3-MR" endpinid="Node-8-2" pointList="32,-104,16,-104,16,-100" />
 
 <item itemtype="Connector" uid="Connector-44" startpinid="74HC595-17-Q3" endpinid="Seven Segment-21-pin_d" pointList="-184,-352,-160,-352" />
@@ -65,6 +63,8 @@
 <item itemtype="Connector" uid="Connector-24" startpinid="CD4026-3-INH" endpinid="Node-8-0" pointList="32,-160,8,-160,8,-100,16,-100" />
 
 <item itemtype="Connector" uid="Connector-7" startpinid="CD4026-3-G" endpinid="Seven Segment-1-pin_g" pointList="88,-128,124,-128,124,-184" />
+
+<item itemtype="Connector" uid="Connector-55" startpinid="Push-27-switch0pinN" endpinid="p12F683-14-PORTP5" pointList="-348,-384,-320,-384" />
 
 <item itemtype="Connector" uid="Connector-46" startpinid="74HC595-17-Q5" endpinid="Seven Segment-21-pin_f" pointList="-184,-336,-160,-336" />
 
